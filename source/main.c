@@ -9,32 +9,8 @@
 #include <ctr/svc.h>
 #include "yeti.h"
 
-Handle srvHandle;
-
-void aptInit()
-{
-	Handle aptuHandle;
-	
-	//initialize APT stuff, escape load screen
-	srv_getServiceHandle(srvHandle, &aptuHandle, "APT:U");
-	APT_GetLockHandle(aptuHandle, 0x0, NULL);
-	svc_closeHandle(aptuHandle);
-	svc_sleepThread(0x50000);
-	
-	srv_getServiceHandle(srvHandle, &aptuHandle, "APT:U");
-	APT_Initialize(aptuHandle, 0x300, NULL, NULL);
-	svc_closeHandle(aptuHandle);
-	svc_sleepThread(0x50000);
-	
-	srv_getServiceHandle(srvHandle, &aptuHandle, "APT:U");
-	APT_Enable(aptuHandle, 0x0);
-	svc_closeHandle(aptuHandle);
-	svc_sleepThread(0x50000);
-}
-
 u8* gspHeap;
 u32* gxCmdBuf;
-Handle gspGpuHandle;
 
 u8 currentBuffer, leftOrRight;
 u8* topFramebuffers[2][2];
@@ -42,8 +18,8 @@ u8* topFramebuffers[2][2];
 void gspGpuGetFramebuffers()
 {
 	//grab main left screen framebuffer addresses
-	GSPGPU_ReadHWRegs(gspGpuHandle, 0x400468, (u8*)&topFramebuffers[0], 8);
-	GSPGPU_ReadHWRegs(gspGpuHandle, 0x400494, (u8*)&topFramebuffers[1], 8);
+	GSPGPU_ReadHWRegs(NULL, 0x400468, (u8*)&topFramebuffers[0], 8);
+	GSPGPU_ReadHWRegs(NULL, 0x400494, (u8*)&topFramebuffers[1], 8);
 
 	//convert PA to VA (assuming FB in VRAM)
 	topFramebuffers[0][0]+=0x7000000;
@@ -54,22 +30,14 @@ void gspGpuGetFramebuffers()
 
 void gspGpuInit()
 {
-	//do stuff with GPU...
-	srv_getServiceHandle(srvHandle, &gspGpuHandle, "gsp::Gpu");
+	gspInit();
 
-	GSPGPU_AcquireRight(gspGpuHandle, 0x0);
-	GSPGPU_SetLcdForceBlack(gspGpuHandle, 0x0);
-
-	// //set framebuffer format
-	u32 regData;
-	// GSPGPU_ReadHWRegs(gspGpuHandle, 0x400470, (u8*)&regData, 4);
-	// regData=(regData&0xFFFFFFF0)|3; //GL_RGB5_A1_OES
-	// GSPGPU_WriteHWRegs(gspGpuHandle, 0x400470, (u8*)&regData, 4);
-	// svc_sleepThread(0x50000);
+	GSPGPU_AcquireRight(NULL, 0x0);
+	GSPGPU_SetLcdForceBlack(NULL, 0x0);
 
 	//set subscreen to blue
-	regData=0x01FF0000;
-	GSPGPU_WriteHWRegs(gspGpuHandle, 0x202A04, (u8*)&regData, 4);
+	u32 regData=0x01FF0000;
+	GSPGPU_WriteHWRegs(NULL, 0x202A04, &regData, 4);
 
 	gspGpuGetFramebuffers();
 
@@ -77,7 +45,7 @@ void gspGpuInit()
 	u8 threadID;
 	Handle gspEvent, gspSharedMemHandle;
 	svc_createEvent(&gspEvent, 0x0);
-	GSPGPU_RegisterInterruptRelayQueue(gspGpuHandle, gspEvent, 0x1, &gspSharedMemHandle, &threadID);
+	GSPGPU_RegisterInterruptRelayQueue(NULL, gspEvent, 0x1, &gspSharedMemHandle, &threadID);
 	svc_mapMemoryBlock(gspSharedMemHandle, 0x10002000, 0x3, 0x10000000);
 
 	//map GSP heap
@@ -91,17 +59,6 @@ void gspGpuInit()
 
 	currentBuffer=0;
 	leftOrRight=0;
-}
-
-void hidInit()
-{
-	Handle hidHandle, hidMemHandle;
-
-	srv_getServiceHandle(srvHandle, &hidHandle, "hid:USER");
-
-	HIDUSER_GetInfo(hidHandle, &hidMemHandle);
-	svc_mapMemoryBlock(hidMemHandle, 0x10000000, 0x1, 0x10000000); //map HID shared mem to 0x10000000
-	HIDUSER_Init(hidHandle);
 }
 
 void yetiUpdateKeyboard(yeti_t* y)
@@ -122,10 +79,10 @@ void yetiUpdateKeyboard(yeti_t* y)
 void swapBuffers()
 {
 	u32 regData;
-	GSPGPU_ReadHWRegs(gspGpuHandle, 0x400478, (u8*)&regData, 4);
+	GSPGPU_ReadHWRegs(NULL, 0x400478, &regData, 4);
 	regData^=1;
 	currentBuffer=regData&1;
-	GSPGPU_WriteHWRegs(gspGpuHandle, 0x400478, (u8*)&regData, 4);
+	GSPGPU_WriteHWRegs(NULL, 0x400478, &regData, 4);
 }
 
 void copyBuffer()
@@ -133,28 +90,24 @@ void copyBuffer()
 	//copy topleft FB
 	u8 copiedBuffer=currentBuffer^1;
 	u8* bufAdr=&gspHeap[0x46500*(currentBuffer+leftOrRight*2)];
-	GSPGPU_FlushDataCache(gspGpuHandle, bufAdr, 0x46500);
-	//GX RequestDma
-	u32 gxCommand[0x8];
-	gxCommand[0]=0x00; //CommandID
-	gxCommand[1]=(u32)bufAdr; //source address
-	gxCommand[2]=(u32)topFramebuffers[leftOrRight][copiedBuffer]; //destination address
-	gxCommand[3]=0x46500; //size
-	gxCommand[4]=gxCommand[5]=gxCommand[6]=gxCommand[7]=0x0;
+	GSPGPU_FlushDataCache(NULL, bufAdr, 0x46500);
 
-	GSPGPU_submitGxCommand(gxCmdBuf, gxCommand, gspGpuHandle);
+	GX_RequestDma(gxCmdBuf, (u32*)bufAdr, (u32*)topFramebuffers[leftOrRight][copiedBuffer], 0x46500);
 }
 
 yeti_t yeti;
 
 int main()
 {
-	getSrvHandle(&srvHandle);
+	initSrv();
 	
-	aptInit();
+	aptInit(APPID_APPLICATION);
 
 	gspGpuInit();
-	hidInit();
+
+	hidInit(NULL);
+
+	aptSetupEventHandler();
 
 	yeti_init(&yeti, (framebuffer_t*) &gspHeap[0x46500], (framebuffer_t*) gspHeap, textures, palette, lua);
 	game_init(&yeti);
