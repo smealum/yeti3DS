@@ -1,7 +1,7 @@
 CC = arm-none-eabi-gcc
 LINK = arm-none-eabi-ld
 OBJCOPY = arm-none-eabi-objcopy
-CTRULIB = "../libctru"
+CTRULIB = ../ctrulib/libctru
 CFLAGS += -Wall -std=c99 -march=armv6 -O3 -I"$(CTRULIB)/include"
 LDFLAGS += --script=script.ld -L"$(DEVKITARM)/arm-none-eabi/lib" -L"$(CTRULIB)/lib"
 

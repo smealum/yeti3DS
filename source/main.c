@@ -15,6 +15,8 @@ u32* gxCmdBuf;
 u8 currentBuffer, leftOrRight;
 u8* topFramebuffers[2][2];
 
+Handle gspEvent, gspSharedMemHandle;
+
 void gspGpuGetFramebuffers()
 {
 	//grab main left screen framebuffer addresses
@@ -43,7 +45,6 @@ void gspGpuInit()
 
 	//setup our gsp shared mem section
 	u8 threadID;
-	Handle gspEvent, gspSharedMemHandle;
 	svc_createEvent(&gspEvent, 0x0);
 	GSPGPU_RegisterInterruptRelayQueue(NULL, gspEvent, 0x1, &gspSharedMemHandle, &threadID);
 	svc_mapMemoryBlock(gspSharedMemHandle, 0x10002000, 0x3, 0x10000000);
@@ -59,6 +60,21 @@ void gspGpuInit()
 
 	currentBuffer=0;
 	leftOrRight=0;
+}
+
+void gspGpuExit()
+{
+	GSPGPU_UnregisterInterruptRelayQueue(NULL);
+
+	//unmap GSP shared mem
+	svc_unmapMemoryBlock(gspSharedMemHandle, 0x10002000);
+	svc_closeHandle(gspSharedMemHandle);
+	svc_closeHandle(gspEvent);
+	
+	gspExit();
+
+	//free GSP heap
+	svc_controlMemory((u32*)&gspHeap, (u32)gspHeap, 0x0, 0x2000000, MEMOP_FREE, 0x0);
 }
 
 void yetiUpdateKeyboard(yeti_t* y)
@@ -112,19 +128,35 @@ int main()
 	yeti_init(&yeti, (framebuffer_t*) &gspHeap[0x46500], (framebuffer_t*) gspHeap, textures, palette, lua);
 	game_init(&yeti);
 
-	while(1)
+	APP_STATUS status;
+	while((status=aptGetStatus())!=APP_EXITING)
 	{
-		yeti.viewport.back = &gspHeap[0x46500*(currentBuffer+leftOrRight*2)];
-		yeti.viewport.front = yeti.viewport.back;
-		game_draw(&yeti);
+		if(status == APP_RUNNING)
+		{
+			yeti.viewport.back = &gspHeap[0x46500*(currentBuffer+leftOrRight*2)];
+			yeti.viewport.front = yeti.viewport.back;
+			game_draw(&yeti);
 
-		if(!leftOrRight){swapBuffers();game_tick(&yeti);yetiUpdateKeyboard(&yeti);gspGpuGetFramebuffers();}
-		copyBuffer();
-		if(topFramebuffers[0][0]!=topFramebuffers[1][0] && topFramebuffers[0][1]!=topFramebuffers[1][1])leftOrRight=!leftOrRight;
-		else leftOrRight=0;
-		// svc_sleepThread(1000000000);
+			if(!leftOrRight){swapBuffers();game_tick(&yeti);yetiUpdateKeyboard(&yeti);gspGpuGetFramebuffers();}
+			copyBuffer();
+			if(topFramebuffers[0][0]!=topFramebuffers[1][0] && topFramebuffers[0][1]!=topFramebuffers[1][1])leftOrRight=!leftOrRight;
+			else leftOrRight=0;
+			// svc_sleepThread(1000000000);
+		}
+		else if(status == APP_SUSPENDING)
+		{
+			aptReturnToMenu();
+		}
+		else if(status == APP_SLEEPMODE)
+		{
+			aptWaitStatusEvent();
+		}
+		svc_sleepThread(16666666);
 	}
 
+	hidExit();
+	gspGpuExit();
+	aptExit();
 	svc_exitProcess();
 	return 0;
 }
