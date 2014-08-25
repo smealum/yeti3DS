@@ -36,8 +36,8 @@ Prepared for public release: 10/24/2003 - Derek J. Evans <derek@theteahouse.com.
 **   YY   EEEEEE   TT   IIIIII 33333  DDDDD
 */
 
-#include <ctr/types.h>
-#include <ctr/HID.h>
+#include <3ds/types.h>
+#include <3ds/HID.h>
 #include "game.h"
 
 /******************************************************************************/
@@ -226,20 +226,20 @@ void camera_behaviour(entity_t* e)
 {
   yeti_t* yeti = (yeti_t *)e->yeti;
 
-  u32* HID=(u32*)0x10000000;
+  // u32* HID=(u32*)0x10000000;
 
-  u8 tused=(u8)HID[0x33];
-  u16 tx=TOUCH_X(HID[0x32]);
+  // u8 tused=(u8)HID[0x33];
+  // u16 tx=TOUCH_X(HID[0x32]);
 
-  if(tused && tused_o)e->tt+=i2f(((s32)tx-(s32)tx_o)*4);
-  tused_o=tused;
-  tx_o=tx;
+  // if(tused && tused_o)e->tt+=i2f(((s32)tx-(s32)tx_o)*4);
+  // tused_o=tused;
+  // tx_o=tx;
 
-  s16 px=CPAD_X(HID[0xD]);
-  s16 py=CPAD_Y(HID[0xD]);
+  // s16 px=CPAD_X(HID[0xD]);
+  // s16 py=CPAD_Y(HID[0xD]);
 
-  entity_move_forward_(e, (py*3)/4);
-  entity_move_side_(e, (px*3)/4);
+  // entity_move_forward_(e, (py*3)/4);
+  // entity_move_side_(e, (px*3)/4);
 
   if (yeti->keyboard.left) entity_turn_left(e);
   if (yeti->keyboard.right) entity_turn_right(e);
