@@ -7,6 +7,7 @@
 #include <3ds/HID.h>
 #include <3ds/svc.h>
 #include <3ds/gfx.h>
+#include <3ds/gsp.h>
 
 #include "yeti.h"
 
@@ -82,7 +83,7 @@ int main()
 		{
 			aptWaitStatusEvent();
 		}
-		svcSleepThread(16666666/2);
+		gspWaitForVBlank();
 	}
 
 	gfxExit();
