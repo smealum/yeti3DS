@@ -4,7 +4,6 @@
 #include <3ds/types.h>
 #include <3ds/srv.h>
 #include <3ds/APT.h>
-#include <3ds/GSP.h>
 #include <3ds/HID.h>
 #include <3ds/svc.h>
 #include <3ds/gfx.h>
@@ -15,7 +14,8 @@ u8 leftOrRight;
 
 void yetiUpdateKeyboard(yeti_t* y)
 {
-	u32 keys=((u32*)0x10000000)[7];
+	hidScanInput();
+	u32 keys=hidKeysHeld();
 
 	y->keyboard.a       = keys&KEY_A;
 	y->keyboard.b       = keys&KEY_B;
@@ -32,13 +32,10 @@ yeti_t yeti;
 
 int main()
 {
-	srvInit();
-	
+	srvInit();	
 	aptInit(APPID_APPLICATION);
-
-	gfxInit();
-
 	hidInit(NULL);
+	gfxInit();
 
 	// aptSetupEventHandler();
 
@@ -71,6 +68,8 @@ int main()
 
 			yetiUpdateKeyboard(&yeti);
 			game_tick(&yeti);
+
+			if(hidKeysDown()&KEY_START)break;
 
 			gfxFlushBuffers();
 			gfxSwapBuffers();

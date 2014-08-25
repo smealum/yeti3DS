@@ -226,20 +226,20 @@ void camera_behaviour(entity_t* e)
 {
   yeti_t* yeti = (yeti_t *)e->yeti;
 
-  // u32* HID=(u32*)0x10000000;
+  touchPosition tpos;
+  hidTouchRead(&tpos);
+  u8 tused=(u8)keysHeld()&KEY_TOUCH;
+  u16 tx=tpos.px;
 
-  // u8 tused=(u8)HID[0x33];
-  // u16 tx=TOUCH_X(HID[0x32]);
+  if(tused && tused_o)e->tt+=i2f(((s32)tx-(s32)tx_o)*4);
+  tused_o=tused;
+  tx_o=tx;
 
-  // if(tused && tused_o)e->tt+=i2f(((s32)tx-(s32)tx_o)*4);
-  // tused_o=tused;
-  // tx_o=tx;
+  circlePosition cpos;
+  hidCircleRead(&cpos);
 
-  // s16 px=CPAD_X(HID[0xD]);
-  // s16 py=CPAD_Y(HID[0xD]);
-
-  // entity_move_forward_(e, (py*3)/4);
-  // entity_move_side_(e, (px*3)/4);
+  entity_move_forward_(e, (cpos.dy*3)/4);
+  entity_move_side_(e, (cpos.dx*3)/4);
 
   if (yeti->keyboard.left) entity_turn_left(e);
   if (yeti->keyboard.right) entity_turn_right(e);
