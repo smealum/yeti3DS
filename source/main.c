@@ -49,6 +49,8 @@ int main()
 		textures, palette, lua
 	);
 
+	gfxSet3D(true);
+
 	game_init(&yeti);
 
 	APP_STATUS status;
@@ -56,17 +58,22 @@ int main()
 	{
 		// if(status == APP_RUNNING)
 		{
-			yeti.viewport.front = yeti.viewport.back;
-			yeti.viewport.back = (framebuffer_t*)gfxGetFramebuffer(GFX_TOP, leftOrRight?GFX_LEFT:GFX_RIGHT, NULL, NULL);
+			int i;
+			for(i=0;i<2;i++)
+			{
+				yeti.viewport.front = yeti.viewport.back;
+				yeti.viewport.back = (framebuffer_t*)gfxGetFramebuffer(GFX_TOP, leftOrRight?GFX_LEFT:GFX_RIGHT, NULL, NULL);
 			
-			game_draw(&yeti);
-			game_tick(&yeti);
+				game_draw(&yeti);
+
+				leftOrRight^=1;
+			}
 
 			yetiUpdateKeyboard(&yeti);
+			game_tick(&yeti);
 
 			gfxFlushBuffers();
 			gfxSwapBuffers();
-			leftOrRight^=1;
 		}
 		// else if(status == APP_SUSPENDING)
 		// {
