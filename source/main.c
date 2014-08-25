@@ -20,10 +20,10 @@ void yetiUpdateKeyboard(yeti_t* y)
 	y->keyboard.a       = keys&KEY_A;
 	y->keyboard.b       = keys&KEY_B;
 	y->keyboard.select  = keys&KEY_SELECT;
-	y->keyboard.left    = keys&KEY_LEFT;
-	y->keyboard.right   = keys&KEY_RIGHT;
-	y->keyboard.up      = keys&KEY_UP;
-	y->keyboard.down    = keys&KEY_DOWN;
+	y->keyboard.left    = keys&KEY_DLEFT;
+	y->keyboard.right   = keys&KEY_DRIGHT;
+	y->keyboard.up      = keys&KEY_DUP;
+	y->keyboard.down    = keys&KEY_DDOWN;
 	y->keyboard.r       = keys&KEY_R;
 	y->keyboard.l       = keys&KEY_L;
 }

@@ -237,6 +237,10 @@ void camera_behaviour(entity_t* e)
 
   circlePosition cpos;
   hidCircleRead(&cpos);
+  if (cpos.dx > -41 && cpos.dx < 41)
+    cpos.dx = 0;
+  if (cpos.dy > -41 && cpos.dy < 41)
+    cpos.dy = 0;
 
   entity_move_forward_(e, (cpos.dy*3)/4);
   entity_move_side_(e, (cpos.dx*3)/4);
