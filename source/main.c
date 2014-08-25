@@ -33,11 +33,11 @@ yeti_t yeti;
 int main()
 {
 	srvInit();	
-	aptInit(APPID_APPLICATION);
+	aptInit();
 	hidInit(NULL);
 	gfxInit();
 
-	// aptSetupEventHandler();
+	aptSetupEventHandler();
 
 	yeti_init(
 		&yeti,
@@ -53,7 +53,7 @@ int main()
 	APP_STATUS status;
 	while((status=aptGetStatus())!=APP_EXITING)
 	{
-		// if(status == APP_RUNNING)
+		if(status == APP_RUNNING)
 		{
 			int i;
 			for(i=0;i<2;i++)
@@ -74,14 +74,14 @@ int main()
 			gfxFlushBuffers();
 			gfxSwapBuffers();
 		}
-		// else if(status == APP_SUSPENDING)
-		// {
-		// 	aptReturnToMenu();
-		// }
-		// else if(status == APP_SLEEPMODE)
-		// {
-		// 	aptWaitStatusEvent();
-		// }
+		else if(status == APP_SUSPENDING)
+		{
+			aptReturnToMenu();
+		}
+		else if(status == APP_SLEEPMODE)
+		{
+			aptWaitStatusEvent();
+		}
 		svcSleepThread(16666666/2);
 	}
 
