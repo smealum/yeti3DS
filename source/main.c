@@ -7,9 +7,9 @@
 #include <3ds/GSP.h>
 #include <3ds/HID.h>
 #include <3ds/svc.h>
+#include <3ds/gfx.h>
 
 #include "yeti.h"
-#include "gfx.h"
 
 u8 leftOrRight;
 
