@@ -227,8 +227,10 @@ void camera_behaviour(entity_t* e)
 
   touchPosition tpos;
   hidTouchRead(&tpos);
-  u8 tused=(u8)keysHeld()&KEY_TOUCH;
+  u8 tused=0;
   u16 tx=tpos.px;
+
+  if(keysHeld()&KEY_TOUCH)tused=1;
 
   if(tused && tused_o)e->tt+=i2f(((s32)tx-(s32)tx_o)*4);
   tused_o=tused;
