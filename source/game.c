@@ -36,8 +36,7 @@ Prepared for public release: 10/24/2003 - Derek J. Evans <derek@theteahouse.com.
 **   YY   EEEEEE   TT   IIIIII 33333  DDDDD
 */
 
-#include <3ds/types.h>
-#include <3ds/HID.h>
+#include <3ds.h>
 #include "game.h"
 
 /******************************************************************************/

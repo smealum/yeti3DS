@@ -1,13 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <3ds/types.h>
-#include <3ds/srv.h>
-#include <3ds/APT.h>
-#include <3ds/HID.h>
-#include <3ds/svc.h>
-#include <3ds/gfx.h>
-#include <3ds/gsp.h>
+#include <3ds.h>
 
 #include "yeti.h"
 
