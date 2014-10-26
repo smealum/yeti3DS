@@ -243,6 +243,11 @@ void camera_behaviour(entity_t* e)
   if (cpos.dy > -41 && cpos.dy < 41)
     cpos.dy = 0;
 
+  circlePosition cstick;
+  hidCstickRead(&cstick);
+
+  e->tt=i2f(cstick.dx/2);
+
   entity_move_forward_(e, (cpos.dy*3)/4);
   entity_move_side_(e, (cpos.dx*3)/4);
 

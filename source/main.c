@@ -30,6 +30,7 @@ int main()
 	srvInit();	
 	aptInit();
 	hidInit(NULL);
+	irrstInit(NULL);
 	gfxInit();
 
 	aptSetupEventHandler();
@@ -77,10 +78,11 @@ int main()
 		{
 			aptWaitStatusEvent();
 		}
-		gspWaitForVBlank();
+		gspWaitForEvent(GSPEVENT_VBlank0, false);
 	}
 
 	gfxExit();
+	irrstExit();
 	hidExit();
 	aptExit();
 	srvExit();
