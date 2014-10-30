@@ -33,8 +33,6 @@ int main()
 	irrstInit(NULL);
 	gfxInit();
 
-	aptSetupEventHandler();
-
 	yeti_init(
 		&yeti,
 		(framebuffer_t*)gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL),
