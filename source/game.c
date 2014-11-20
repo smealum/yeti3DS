@@ -232,7 +232,7 @@ void camera_behaviour(entity_t* e)
 
   if(keysHeld()&KEY_TOUCH)tused=1;
 
-  if(tused && tused_o)e->tt+=i2f(((s32)tx-(s32)tx_o)*4);
+  if(tused && tused_o)e->tt+=i2f(((s32)tx-(s32)tx_o)*2);
   tused_o=tused;
   tx_o=tx;
 
@@ -246,7 +246,7 @@ void camera_behaviour(entity_t* e)
   circlePosition cstick;
   hidCstickRead(&cstick);
 
-  e->tt=i2f(cstick.dx/2);
+  e->tt+=i2f(cstick.dx/4);
 
   entity_move_forward_(e, (cpos.dy*3)/4);
   entity_move_side_(e, (cpos.dx*3)/4);

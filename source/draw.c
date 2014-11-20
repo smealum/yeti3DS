@@ -62,6 +62,8 @@ Prepared for public release: 10/24/2003 - Derek J. Evans <derek@theteahouse.com.
 
 #include "yeti.h"
 
+#define CONFIG_3D_SLIDERSTATE (*(float*)0x1FF81080)
+
 /******************************************************************************/
 
 void CODE_IN_IWRAM matrix_rotate_world(matrx_t m, int alp, int bet, int gam)
@@ -733,15 +735,19 @@ void CODE_IN_IWRAM yeti_draw(yeti_t* yeti)
 
   s32 ox=yeti->camera->x, oy=yeti->camera->y, oz=yeti->camera->z;
 
+  float slider=CONFIG_3D_SLIDERSTATE;
+  float interaxial=slider*5.0f;
+
+  if(!leftOrRight)interaxial=-interaxial;
+
   // for 3D effect
-  s8 addedAngle=(leftOrRight?-5:5);
-  yeti->camera->x -= fixsin(f2i(yeti->camera->t)+addedAngle) >> 6;
-  yeti->camera->y -= fixcos(f2i(yeti->camera->t)+addedAngle) >> 6;
+  yeti->camera->x -= (fixsin(f2i(yeti->camera->t)) >> 6) + (+((int)(interaxial*fixcos(f2i(yeti->camera->t)))) >> 6);
+  yeti->camera->y -= (fixcos(f2i(yeti->camera->t)) >> 6) + (-((int)(interaxial*fixsin(f2i(yeti->camera->t)))) >> 6);
   
   matrix_rotate_world(yeti->m,
     -f2i(yeti->camera->r),
     -f2i(yeti->camera->p),
-    -f2i(yeti->camera->t)+addedAngle);
+    -f2i(yeti->camera->t));
 
   raywidth = 16 + (ABS(yeti->camera->p) >> 13);
 

@@ -12,15 +12,15 @@ void yetiUpdateKeyboard(yeti_t* y)
 	hidScanInput();
 	u32 keys=hidKeysHeld();
 
-	y->keyboard.a       = keys&KEY_A;
-	y->keyboard.b       = keys&KEY_B;
-	y->keyboard.select  = keys&KEY_SELECT;
-	y->keyboard.left    = keys&KEY_DLEFT;
-	y->keyboard.right   = keys&KEY_DRIGHT;
-	y->keyboard.up      = keys&KEY_DUP;
-	y->keyboard.down    = keys&KEY_DDOWN;
-	y->keyboard.r       = keys&KEY_R;
-	y->keyboard.l       = keys&KEY_L;
+	y->keyboard.a       = (keys&KEY_A)!=0;
+	y->keyboard.b       = (keys&KEY_B)!=0;
+	y->keyboard.select  = (keys&KEY_SELECT)!=0;
+	y->keyboard.left    = (keys&KEY_DLEFT)!=0;
+	y->keyboard.right   = (keys&KEY_DRIGHT)!=0;
+	y->keyboard.up      = (keys&KEY_DUP)!=0;
+	y->keyboard.down    = (keys&KEY_DDOWN)!=0;
+	y->keyboard.r       = (keys&KEY_R)!=0;
+	y->keyboard.l       = (keys&KEY_L)!=0;
 }
 
 yeti_t yeti;
@@ -44,39 +44,28 @@ int main()
 
 	game_init(&yeti);
 
-	APP_STATUS status;
-	while((status=aptGetStatus())!=APP_EXITING)
+	while(aptMainLoop())
 	{
-		if(status == APP_RUNNING)
+		int i;
+		for(i=0;i<2;i++)
 		{
-			int i;
-			for(i=0;i<2;i++)
-			{
-				yeti.viewport.front = yeti.viewport.back;
-				yeti.viewport.back = (framebuffer_t*)gfxGetFramebuffer(GFX_TOP, leftOrRight?GFX_LEFT:GFX_RIGHT, NULL, NULL);
-			
-				game_draw(&yeti);
+			yeti.viewport.front = yeti.viewport.back;
+			yeti.viewport.back = (framebuffer_t*)gfxGetFramebuffer(GFX_TOP, leftOrRight?GFX_LEFT:GFX_RIGHT, NULL, NULL);
+		
+			game_draw(&yeti);
 
-				leftOrRight^=1;
-			}
-
-			yetiUpdateKeyboard(&yeti);
-			game_tick(&yeti);
-
-			if(hidKeysDown()&KEY_START)break;
-
-			gfxFlushBuffers();
-			gfxSwapBuffers();
+			leftOrRight^=1;
 		}
-		else if(status == APP_SUSPENDING)
-		{
-			aptReturnToMenu();
-		}
-		else if(status == APP_SLEEPMODE)
-		{
-			aptWaitStatusEvent();
-		}
-		gspWaitForEvent(GSPEVENT_VBlank0, false);
+
+		yetiUpdateKeyboard(&yeti);
+		game_tick(&yeti);
+
+		if(hidKeysDown()&KEY_START)break;
+
+		gfxFlushBuffers();
+		gfxSwapBuffers();
+
+		gspWaitForEvent(GSPEVENT_VBlank0, true);
 	}
 
 	gfxExit();
