@@ -4,6 +4,7 @@
 #include <3ds.h>
 
 #include "yeti.h"
+#include "game.h"
 
 u8 leftOrRight;
 
@@ -27,11 +28,11 @@ yeti_t yeti;
 
 int main()
 {
-	srvInit();	
+	srvInit();
 	aptInit();
 	hidInit(NULL);
 	irrstInit(NULL);
-	gfxInit();
+	gfxInitDefault();
 
 	yeti_init(
 		&yeti,
@@ -51,7 +52,7 @@ int main()
 		{
 			yeti.viewport.front = yeti.viewport.back;
 			yeti.viewport.back = (framebuffer_t*)gfxGetFramebuffer(GFX_TOP, leftOrRight?GFX_LEFT:GFX_RIGHT, NULL, NULL);
-		
+
 			game_draw(&yeti);
 
 			leftOrRight^=1;

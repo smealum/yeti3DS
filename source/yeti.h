@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 - Derek John Evans 
+Copyright (C) 2003 - Derek John Evans
 
 This file is part of Yeti3D Portable Engine
 
@@ -10,7 +10,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -279,8 +279,8 @@ typedef rgb555_t* sprite_t;
 /******************************************************************************/
 
 // Type definition of a polygon vertex
-typedef struct  
-{ 
+typedef struct
+{
   s32 x;  // 24:8 Fixed Point X Position.
   s32 y;  // 24:8 Fixed Point Y Position.
   s32 z;  // 24:8 Fixed Point Z Position.
@@ -315,10 +315,10 @@ typedef struct
 typedef struct entity_t
 {
   struct entity_t* next;
-  
+
   void* tag;
   void* yeti;
-  
+
   entity_visual_t visual;
 
   u8 swi;
@@ -357,7 +357,7 @@ typedef void (*entity_behaviour_t)(entity_t* e);
 typedef struct
 {
   u8 swi;   // Cell switchs (flags).
-  u8 ent;   // Entity Type. Used for setting start locations for entities.  
+  u8 ent;   // Entity Type. Used for setting start locations for entities.
   s16 top;  // 8:8 fixed point cell top value.
   s16 mid;  // 8:8 fixed point cell mid value. (Currently Unused/Reserved)
   s16 bot;  // 8:8 fixed point cell bot value.
@@ -378,11 +378,11 @@ typedef struct
   rom_cell_t cells[YETI_MAP_HEIGHT][YETI_MAP_WIDTH];
 } rom_map_t;
 
-typedef struct 
+typedef struct
 {
   u16 swi;  // Cell flags.
   s16 top;  // 8:8 fixed point cell top value.
-  s16 mid;  // 8:8 fixed point cell mid value. (Currently unused)  
+  s16 mid;  // 8:8 fixed point cell mid value. (Currently unused)
   s16 bot;  // 8:8 fixed point cell bot value.
 #ifdef __YETI_EDITOR__
   s16 tos;  // Top save.
@@ -398,7 +398,7 @@ typedef struct
   u32 mark;
   entity_t* entities;
 
-  int vcache_size;  
+  int vcache_size;
   vertex_t* vcache[YETI_VCACHE_MAX];
 } cell_t;
 
@@ -413,7 +413,7 @@ typedef struct
 // Keyboard structure. The keys are based on the GBA keyboard set. Previous
 // frame settings are stored so you can test for keydown and keyup events
 // by checking a keys previous setting.
-// eg: selectdown = kb->select & !kb->_select; 
+// eg: selectdown = kb->select & !kb->_select;
 
 typedef struct
 {
@@ -504,7 +504,7 @@ void CODE_IN_IWRAM draw_sprite(
   yeti_t* yeti, vertex_t a, vertex_t b,
   YETI_ROM sprite_t sprite,
   int cl, int ct, int cr, int cb, int mode);
-  
+
 extern void CODE_IN_IWRAM draw_sprite_di(
   yeti_t* yeti,
   int x1, int y1, int x2, int y2, int z,
@@ -523,7 +523,7 @@ extern void viewport_to_video(
   rgb555_t* video, int pitch,
   viewport_t* vp,
   int rmask, int gmask, int bmask);
-  
+
 extern void yeti_light(yeti_t* yeti, int lightx, int lighty);
 extern void yeti_clear_entities(yeti_t* yeti);
 extern void yeti_load_map(yeti_t* yeti, rom_map_t* map);
@@ -571,5 +571,3 @@ extern YETI_ROM int sintable[YETI_SINTABLE_MAX];
 #endif
 
 #endif
-
-
