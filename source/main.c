@@ -30,8 +30,8 @@ int main()
 {
 	srvInit();
 	aptInit();
-	hidInit(NULL);
-	irrstInit(NULL);
+	hidInit();
+	irrstInit();
 	gfxInitDefault();
 
 	yeti_init(
@@ -66,7 +66,7 @@ int main()
 		gfxFlushBuffers();
 		gfxSwapBuffers();
 
-		gspWaitForEvent(GSPEVENT_VBlank0, true);
+		gspWaitForEvent(GSPGPU_EVENT_VBlank0, true);
 	}
 
 	gfxExit();
