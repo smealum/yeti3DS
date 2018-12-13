@@ -30,8 +30,8 @@ int main()
 {
 	srvInit();
 	aptInit();
-	hidInit(NULL);
-	irrstInit(NULL);
+	hidInit();
+	irrstInit();
 	gfxInitDefault();
 
 	yeti_init(
