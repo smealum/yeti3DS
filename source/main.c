@@ -66,7 +66,7 @@ int main()
 		gfxFlushBuffers();
 		gfxSwapBuffers();
 
-		gspWaitForEvent(GSPEVENT_VBlank0, true);
+		gspWaitForEvent(GSPGPU_EVENT_VBlank0, true);
 	}
 
 	gfxExit();
